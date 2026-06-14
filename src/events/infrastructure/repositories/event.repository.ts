@@ -1,6 +1,7 @@
 import { HydratedDocument, Model } from 'mongoose';
 import { Event } from 'src/events/domain/entities/event.entity';
 import { EventRepositoryPort } from 'src/events/domain/ports/event-repository.port';
+import { IEvent } from 'src/events/domain/types/event.type';
 
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -19,16 +20,24 @@ export class EventRepository implements EventRepositoryPort {
 
     const event = await this.model.create({
       _id: snapshot.id,
-      playerId: snapshot.playerId,
       type: snapshot.type,
       payload: snapshot.payload,
     });
 
     return Event.create({
       id: event.id,
-      playerId: event.playerId,
       type: event.type,
       payload: event.payload,
+      timestamp: event.timestamp,
     });
+  }
+
+  public async findBy(params: Partial<Omit<IEvent, 'payload'>>) {
+    const cleanedFilter = Object.fromEntries(
+      Object.entries(params).filter(([, value]) => value !== undefined),
+    );
+
+    const result = await this.model.find(cleanedFilter).select({ type: 1, payload: 1 });
+    return result.map(event => Event.create(event));
   }
 }
