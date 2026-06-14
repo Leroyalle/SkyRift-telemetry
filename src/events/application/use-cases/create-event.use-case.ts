@@ -14,12 +14,12 @@ export class CreateEventUseCase implements CreateEventUseCasePort {
     @Inject(EVENT_REPOSITORY_TOKEN) private readonly eventRepository: EventRepositoryPort,
   ) {}
 
-  public async execute(input: IEvent) {
+  public async execute(input: Omit<IEvent, 'id'>): Promise<IEvent> {
     const domain = Event.create({
       id: randomUUID(),
       payload: input.payload,
-      playerId: input.playerId,
       type: input.type,
+      timestamp: new Date(),
     });
 
     const result = await this.eventRepository.create(domain);
