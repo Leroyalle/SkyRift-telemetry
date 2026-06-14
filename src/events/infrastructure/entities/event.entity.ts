@@ -11,11 +11,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 export class EventOrmEntity {
   @Prop({
     required: true,
-  })
-  playerId!: string;
-
-  @Prop({
-    required: true,
     enum: EVENT_TYPES,
   })
   type!: EventType;
@@ -25,11 +20,17 @@ export class EventOrmEntity {
     type: Object,
   })
   payload!: Record<string, unknown>;
+
+  @Prop({
+    type: Date,
+    required: true,
+  })
+  timestamp!: Date;
 }
 
-export const EventSchema = SchemaFactory.createForClass(EventOrmEntity);
+export const CreatedEventSchema = SchemaFactory.createForClass(EventOrmEntity);
 
-EventSchema.index({
-  playerId: 1,
+CreatedEventSchema.index({
   type: 1,
+  timestamp: 1,
 });
