@@ -3,9 +3,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { EventModule } from './events/event.module';
+import { InfraModule } from './infra/infra.module';
 
 @Module({
   imports: [
+    InfraModule,
     EventModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
